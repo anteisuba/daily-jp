@@ -32,8 +32,9 @@ public class Binary {
 //		4 运算后的源码   10000000 00000000 00000000 00000011 => -3
 		
 		
-		System.out.println(2);
-		
+		System.out.println(1 << 2);
+
+		System.out.println(1 >> 2);
 //		System.out.println();
 		
 		
