@@ -12,6 +12,8 @@ public class If01 {
 		
 		if(age > 18) {
 			System.out.println("年龄大于18");
+		} else {
+			System.out.println("年龄不大于18");
 		}
 		
 		System.out.println("程序继续执行");
