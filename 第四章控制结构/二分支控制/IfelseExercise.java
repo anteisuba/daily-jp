@@ -8,7 +8,7 @@ public class IfelseExercise {
 		
 		Scanner myScanner = new Scanner(System.in);
 		
-		System.out.println("请输入信用分：");
+		System.out.println("请输入信用分（1-100）：");
 		
 		int xinyong = myScanner.nextInt();
 		
