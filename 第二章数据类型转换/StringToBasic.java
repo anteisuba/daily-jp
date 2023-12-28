@@ -35,7 +35,7 @@ public class StringToBasic {
 		System.out.println(num1);
 		System.out.println(num2);
 			
-		
+		System.out.println(s6.charAt(1));
 		
 		
 		
