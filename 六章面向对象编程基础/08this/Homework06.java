@@ -2,11 +2,15 @@ package 面向对象编程基础.this函数;
 
 public class Homework06 {
 	public static void main(String[] args) {
-		Cale cale = new Cale(3, 1);
+		Cale cale = new Cale(10, 0);
 		System.out.println(cale.sum());
 		System.out.println(cale.mins());
 		System.out.println(cale.mul());
-		System.out.println(cale.div());
+		Integer divres = cale.div();
+		if (divres != null) {
+			System.out.println(divres);
+		}
+		
 	}
 }
 
@@ -30,11 +34,14 @@ class Cale {
 		return a * b;
 	}
 	
-	public int div() {
-		if(a / b == 0) {
-			System.out.println("为0");
+	public Integer div() {
+		if( b == 0) {
+			System.out.println("不能为0");
+			return null;
+		}else {
+			return a / b;
+			
 		}
-		return a / b;
 	}
 	
 	
