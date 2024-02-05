@@ -4,6 +4,14 @@ public class Account {
     String name;
     double salary;
     String password;
+    public Account() {
+
+    }
+    public Account(String name,double balance,String password) {
+        this.setName(name);
+        this.setSalary(balance);
+        this.setPassword(password);
+    }
 
     public String getName() {
         return name;

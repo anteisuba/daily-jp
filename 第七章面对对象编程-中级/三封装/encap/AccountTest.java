@@ -8,6 +8,8 @@ public class AccountTest {
         account1.name = "yan";
         account1.salary = 40;
         account1.info();
+        Account ac = new Account("ac", 60, "223344");
+        ac.info();
     }
 }
 
