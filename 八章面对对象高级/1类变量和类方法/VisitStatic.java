@@ -11,5 +11,5 @@ public class VisitStatic {
 class A {
     //类变量访问必须遵守相关的访问权限
     public static String name = "yang";
-
+    private int num = 10;
 }
