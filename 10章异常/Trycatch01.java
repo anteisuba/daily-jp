@@ -4,6 +4,6 @@ package 异常;/*
 
 public class Trycatch01 {
     public static void main(String[] args) {
-        
+
     }
 }
