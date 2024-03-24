@@ -10,6 +10,8 @@ public class Vector_ {
         for (int i = 0; i < 10; i++) {
             vector.add(i);
         }
+
+        vector.add(100);
         System.out.println(vector);
     }
 }
