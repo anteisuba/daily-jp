@@ -1,4 +1,4 @@
-package 集合;/*
+package 集合.Collection_;/*
  *@author yang
  */
 

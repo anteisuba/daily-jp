@@ -1,10 +1,9 @@
-package 集合;/*
+package 集合.Collection_;/*
  *@author yang
  */
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 
 public class CollectionIterator {
