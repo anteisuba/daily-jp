@@ -11,7 +11,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Vector;
 
-public class MyPanel extends JPanel implements KeyListener {
+
+//为了监听键盘事件，实现KeyListener
+//为了让Panel不停的重绘子弹，需要将MyPanel做成线程
+public class MyPanel extends JPanel implements KeyListener,Runnable {
     Mytank mytank = null;
    Vector<EnemyTank> enemyTanks = new Vector<>();
    int enemyTankSize = 3;
@@ -36,7 +39,12 @@ public class MyPanel extends JPanel implements KeyListener {
     public void paint(Graphics g) {
         super.paint(g);
         g.fillRect(0,0,1000,750); //aa填充矩形，默认黑色
-        drawTank(mytank.getX()+120,mytank.getY()+120, g, mytank.getDirect(), 0);
+        drawTank(mytank.getX(),mytank.getY(), g, mytank.getDirect(), 0);
+
+        if (mytank.shot != null && mytank.shot.isLive == true) {
+            g.fill3DRect(mytank.shot.x , mytank.shot.y,5,5,false);
+        }
+
         for (int i = 0; i < enemyTanks.size(); i++) {
             EnemyTank enemyTank = enemyTanks.get(i);
             drawTank(enemyTank.getX(),enemyTank.getY(),g,enemyTank.getDirect(),1);
@@ -121,13 +129,30 @@ public class MyPanel extends JPanel implements KeyListener {
             mytank.setDirect(3);
             mytank.moveLeft();
         }
-
+        if (e.getKeyCode() == KeyEvent.VK_J) {
+            mytank.shotEnemyTank();
+            System.out.println("用户按下了J，开始射击");
+        }
+        //让面板重绘
         this.repaint();
     }
 
 
     @Override
     public void keyReleased(KeyEvent e) {
+
+    }
+
+    @Override
+    public void run() { //每隔100毫秒，重绘区域
+        while (true) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            this.repaint();
+        }
 
     }
 }
