@@ -1,4 +1,4 @@
-package IO流.IO流原理;/*
+package IO流.IO流原理.copy;/*
  *@author yang
  */
 
