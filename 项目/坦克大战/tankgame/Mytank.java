@@ -3,14 +3,22 @@ package 项目.坦克大战.tankgame;/*
  自己的tank
  */
 
+import java.util.Vector;
+
 public class Mytank extends Tank{
     //定义一个Shot对象,表示一个射击（线程）
     Shot shot = null;
 
+    Vector<Shot> shots = new Vector<>();
     public Mytank(int x, int y) {
         super(x, y);
     }
     public void shotEnemyTank() {
+        //最多只能射五颗子弹
+        if (shots.size() == 5) {
+            return;
+        }
+
         //创建shot对象，根据当前mytank对象的位置和方向来创建shot
         switch(getDirect()) {
             case 0: //右
@@ -27,6 +35,9 @@ public class Mytank extends Tank{
 
 
         }
+        //把新创建的shot放入到shots
+        shots.add(shot);
+
         //启动线程
         new Thread(shot).start();
 

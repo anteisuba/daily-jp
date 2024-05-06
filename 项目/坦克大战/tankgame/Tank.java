@@ -8,6 +8,8 @@ public class Tank {
     private int direct; //坦克方向 0 1 2 3,默认是0
     private int speed = 1;
 
+    boolean isLive = true;
+
     public int getSpeed() {
         return speed;
     }

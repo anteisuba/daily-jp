@@ -30,14 +30,20 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
 
    int enemyTankSize = 3;
     public MyPanel() {
-        mytank = new Mytank(100,100); //初始化自己的坦克
+        //将MyPanel对象的 enemyTanks 设置给 Recorder 的 enemyTanks
+        Recorder.setEnemyTanks(enemyTanks);
+        mytank = new Mytank(500,100); //初始化自己的坦克
         mytank.setSpeed(10);
         //初始化敌人的坦克
         for (int i = 0; i < enemyTankSize; i++) {
             //创建敌人坦克
             EnemyTank enemyTank = new EnemyTank((100 * (i + 1)), 0);
+            //将enemyTanks设置给enemyTank
+            enemyTank.setEnemyTanks(enemyTanks);
             //设置方向
             enemyTank.setDirect(2);
+            //启动敌人坦克线程
+            new Thread(enemyTank).start();
             //给该enemyTank 加入一颗子弹
             Shot shot = new Shot(enemyTank.getX() + 20,enemyTank.getY() + 60,enemyTank.getDirect());
             //加入enemyTank的Vector成员
@@ -61,16 +67,43 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
     }
 
 
+    //编写方法，显示我方击毁敌方坦克信息
+    public void showInfo(Graphics g) {
+        //画出玩家的总成绩
+        g.setColor(Color.black);
+        Font font = new Font("宋体",Font.BOLD,25);
+        g.setFont(font);
+        g.drawString("您累积击毁敌方坦克",1020,30);
+        drawTank(1020,60,g,1,0); //画出一个敌方坦克
+        g.setColor(Color.black); //这里需要重新设置成黑色
+        g.drawString(Recorder.getAllEnemyTankNum() + "",1080,100);
 
+    }
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        g.fillRect(0,0,1000,750); //aa填充矩形，默认黑色
 
-        drawTank(mytank.getX(),mytank.getY(), g, mytank.getDirect(), 0);
+        g.fillRect(0,0,1000,750); //填充矩形，默认黑色
+
+        showInfo(g);
+
+        if (mytank != null && mytank.isLive) {
+
+            drawTank(mytank.getX(),mytank.getY(), g, mytank.getDirect(), 0);
+        }
+
         //mytank射击的子弹
-        if (mytank.shot != null && mytank.shot.isLive == true) {
-            g.fill3DRect(mytank.shot.x , mytank.shot.y,5,5,false);
+//        if (mytank.shot != null && mytank.shot.isLive == true) {
+//            g.fill3DRect(mytank.shot.x , mytank.shot.y,5,5,false);
+//        }
+        //将mytank的子弹集合shots，遍历取出绘制
+        for (int i = 0; i < mytank.shots.size(); i++) {
+            Shot shot = mytank.shots.get(i);
+            if (mytank.shot != null && shot.isLive) {
+            g.fill3DRect(shot.x , shot.y,5,5,false);
+        } else { //如果该shot对象已经无效了 就从shots集合中拿掉
+                mytank.shots.remove(shot);
+            }
         }
 
         //如果bombs集合中有对象，就画出
@@ -168,8 +201,53 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
         }
     }
 
+    //判断我方子弹是否击中敌人坦克时，就需要把我们的子弹集合中所有的子弹，都取出和敌人的所有坦克，进行判断
+    public void hitEnemyTank() {
+        //遍历我们的子弹
+//        for (int j = 0; j < mytank.shots.size(); j++) {
+//            Shot shot = mytank.shots.get(j);
+//            //判断是否击中了坦克
+//            if (shot != null && shot.isLive) {
+//                for (int i = 0; i < enemyTanks.size(); i++) {
+//                    EnemyTank enemyTank = enemyTanks.get(i);
+//                    hitTank(mytank.shot, enemyTank);
+//                }
+//            }
+//        }
+
+        //单颗子弹
+        if (mytank.shot != null && mytank.shot.isLive) {
+            for (int i = 0; i < enemyTanks.size(); i++) {
+                EnemyTank enemyTank = enemyTanks.get(i);
+                hitTank(mytank.shot, enemyTank);
+            }
+        }
+
+    }
+
+    //判断敌人坦克是否击中我的坦克
+    public void hitHero() {
+        //遍历所有的敌人坦克
+        for (int i = 0; i < enemyTanks.size(); i++) {
+            //取出敌人坦克
+            EnemyTank enemyTank = enemyTanks.get(i);
+            //遍历enemyTank对象的所有子弹
+            for (int j = 0; j < enemyTank.shots.size(); j++) {
+                //取出当前子弹
+                Shot shot = enemyTank.shots.get(j);
+                //判断shot是否击中我的坦克
+                if (mytank.isLive && shot.isLive) {
+                    hitTank(shot,mytank);
+                }
+
+            }
+        }
+    }
+
+
+
     //判断我放坦克的子弹是否击中敌人坦克
-    public void hitTank(Shot s,EnemyTank enemyTank) {
+    public void hitTank(Shot s,Tank enemyTank) {
         //判断s击中坦克
         switch(enemyTank.getDirect()) {
             case 1: //坦克向上
@@ -178,6 +256,12 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
                    && s.y > enemyTank.getY() && s.y < enemyTank.getY() + 60) {
                     s.isLive = false;
                     enemyTank.isLive = false;
+                    //当我方子弹击中敌人坦克后，将enemyTank从Vector中去掉
+                    enemyTanks.remove(enemyTank);
+                    //当我放击毁一个敌人坦克时，就对数据allEnemyTankNum++
+                    if (enemyTank instanceof EnemyTank) {
+                        Recorder.addAllEnemyTankNum();
+                    }
                     //创建Bomb对象，加入到bombs集合
                     Boom bomb = new Boom(enemyTank.getX(), enemyTank.getY());
                     bombs.add(bomb);
@@ -185,12 +269,15 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
                 }
                 break;
             case 0: //坦克向右
-
             case 3: //坦克向左
                 if (s.x > enemyTank.getX() && s.x < enemyTank.getX() + 60
                         && s.y > enemyTank.getY() && s.y < enemyTank.getY() + 40) {
                     s.isLive = false;
                     enemyTank.isLive = false;
+                    enemyTanks.remove(enemyTank);
+                    if (enemyTank instanceof EnemyTank) {
+                        Recorder.addAllEnemyTankNum();
+                    }
                     //创建Bomb对象，加入到bombs集合
                     Boom bomb = new Boom(enemyTank.getX(), enemyTank.getY());
                     bombs.add(bomb);
@@ -213,24 +300,39 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_S) {
             mytank.setDirect(2);
-            mytank.moveDown();
+            if (mytank.getY() + 60 < 750) {
+                mytank.moveDown();
+            }
+
 
 
         } else if (e.getKeyCode() == KeyEvent.VK_W) {
             mytank.setDirect(1);
-            mytank.moveUp();
+            if (mytank.getY() > 0) {
+                mytank.moveUp();
+            }
+
 
         } else if (e.getKeyCode() == KeyEvent.VK_D) {
             mytank.setDirect(0);
-            mytank.moveRight();
+            if (mytank.getX() + 60 < 1000) {
+                mytank.moveRight();
+            }
 
         } else if (e.getKeyCode() == KeyEvent.VK_A) {
             mytank.setDirect(3);
-            mytank.moveLeft();
+            if (mytank.getX() > 0) {
+                mytank.moveLeft();
+
+            }
         }
         if (e.getKeyCode() == KeyEvent.VK_J) {
+            //判断hero的子弹是否销毁，发射一颗子弹
+//            if (mytank.shot == null || !mytank.shot.isLive) {
+//                mytank.shotEnemyTank();
+//            }
+            //发射多颗子弹
             mytank.shotEnemyTank();
-            System.out.println("用户按下了J，开始射击");
         }
         //让面板重绘
         this.repaint();
@@ -251,14 +353,8 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
                 throw new RuntimeException(e);
             }
 
-            //判断是否击中敌人坦克
-            if (mytank.shot != null && mytank.shot.isLive) {
-                for (int i = 0; i < enemyTanks.size(); i++) {
-                    EnemyTank enemyTank = enemyTanks.get(i);
-                    hitTank(mytank.shot, enemyTank);
-                }
-            }
-
+            hitEnemyTank();
+            hitHero();
             this.repaint();
         }
 
