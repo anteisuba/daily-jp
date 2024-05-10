@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.util.Vector;
 
 
@@ -18,6 +19,8 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
     Mytank mytank = null;
     //定义敌人坦克，放入Vector
     Vector<EnemyTank> enemyTanks = new Vector<>();
+    //定一个存放Node对象的Vector，用于恢复敌人坦克的坐标和方向
+    Vector<Node> nodes = new Vector<>();
     //定义一个Vector，用于存放炸弹
     //当子弹击中坦克时，加入一个Bomb对象到bombs
 
@@ -29,33 +32,71 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
     Image image3 = null;
 
    int enemyTankSize = 3;
-    public MyPanel() {
+
+
+    public MyPanel(String key) {
+        //先判断记录的文件是否存在
+        //如果存在，就正常执行，如果文件不存在，提示只能开启新游戏key="1"
+        File file = new File(Recorder.getRecordFile());
+        if (file.exists()) {
+            nodes = Recorder.getNodesAndEnemyTankNumRec();
+        } else {
+            System.out.println("文件不存在，只能开启新的游戏");
+            key = "1";
+        }
         //将MyPanel对象的 enemyTanks 设置给 Recorder 的 enemyTanks
         Recorder.setEnemyTanks(enemyTanks);
         mytank = new Mytank(500,100); //初始化自己的坦克
-        mytank.setSpeed(10);
-        //初始化敌人的坦克
-        for (int i = 0; i < enemyTankSize; i++) {
-            //创建敌人坦克
-            EnemyTank enemyTank = new EnemyTank((100 * (i + 1)), 0);
-            //将enemyTanks设置给enemyTank
-            enemyTank.setEnemyTanks(enemyTanks);
-            //设置方向
-            enemyTank.setDirect(2);
-            //启动敌人坦克线程
-            new Thread(enemyTank).start();
-            //给该enemyTank 加入一颗子弹
-            Shot shot = new Shot(enemyTank.getX() + 20,enemyTank.getY() + 60,enemyTank.getDirect());
-            //加入enemyTank的Vector成员
-            enemyTank.shots.add(shot);
-            new Thread(shot).start();
 
-            //加入
-            enemyTanks.add(enemyTank);
+        switch(key) {
+            case "1":
+                //初始化敌人的坦克
+                for (int i = 0; i < enemyTankSize; i++) {
+                    //创建敌人坦克
+                    EnemyTank enemyTank = new EnemyTank((100 * (i + 1)), 0);
+                    //将enemyTanks设置给enemyTank
+                    enemyTank.setEnemyTanks(enemyTanks);
+                    //设置方向
+                    enemyTank.setDirect(2);
+                    //启动敌人坦克线程
+                    new Thread(enemyTank).start();
+                    //给该enemyTank 加入一颗子弹
+                    Shot shot = new Shot(enemyTank.getX() + 20,enemyTank.getY() + 60,enemyTank.getDirect());
+                    //加入enemyTank的Vector成员
+                    enemyTank.shots.add(shot);
+                    new Thread(shot).start();
+                    //加入
+                    enemyTanks.add(enemyTank);
+                }
+                break;
+            case "2": //继续上局游戏
+                //初始化敌人的坦克
+                for (int i = 0; i < nodes.size(); i++) {
+                    Node node = nodes.get(i);
+                    //创建敌人坦克
+                    EnemyTank enemyTank = new EnemyTank(node.getX(), node.getY());
+                    //将enemyTanks设置给enemyTank
+                    enemyTank.setEnemyTanks(enemyTanks);
+                    //设置方向
+                    enemyTank.setDirect(node.getDirect());
+                    //启动敌人坦克线程
+                    new Thread(enemyTank).start();
+                    //给该enemyTank 加入一颗子弹
+                    Shot shot = new Shot(enemyTank.getX() + 20,enemyTank.getY() + 60,enemyTank.getDirect());
+                    //加入enemyTank的Vector成员
+                    enemyTank.shots.add(shot);
+                    new Thread(shot).start();
 
-
-
+                    //加入
+                    enemyTanks.add(enemyTank);
+                }
+                break;
+            default:
+                System.out.println("你的输入有误");
         }
+
+        mytank.setSpeed(10);
+
 
         //初始化图片对象
 //        image1 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/boom1_.gif"));
@@ -64,6 +105,10 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
         image1 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_1.gif"));
         image2 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_2.gif"));
         image3 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_3.gif"));
+
+        //这里在播放指定的音乐
+        new AePlayWave("/Users/dreamtank/JDK/IDEAtest/src/111.wav").start();
+
     }
 
 

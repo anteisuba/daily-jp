@@ -10,11 +10,13 @@ public class Recorder {
     //定义变量，记录我放击毁敌人坦克数量
     private static int allEnemyTankNum = 0;
     //定义IO对象,准备写数据到文件中
-    private static FileWriter fw = null;
     private static BufferedWriter bw = null;
-
     private static BufferedReader br = null;
+
+    //把记录文件保存到src下
+    //private static String recordFile = "/Users/dreamtank/JDK/IDEAtest/src/项目/坦克大战/tankgame/myRecord.txt";
     private static String recordFile = "/Users/dreamtank/JDK/IDEAtest/src/项目/坦克大战/tankgame/myRecord.txt";
+
     //定义Vector，指向MyPanel对象的敌人坦克Vector
     private static Vector<EnemyTank> enemyTanks = null;
 
@@ -26,7 +28,12 @@ public class Recorder {
         Recorder.enemyTanks = enemyTanks;
     }
 
+    public static String getRecordFile() {
+        return recordFile;
+    }
+
     //增加一个方法，用于读取recordFile,恢复相关信息
+    //该方法在继续上局的时候调用即可
     public static Vector<Node> getNodesAndEnemyTankNumRec() {
         try {
             br = new BufferedReader(new FileReader(recordFile));
@@ -35,13 +42,24 @@ public class Recorder {
             String line = "";
             while((line = br.readLine()) != null) {
                 String[] xyd = line.split(" ");
-                new Node(Integer.parseInt(xyd[0]),Integer.parseInt(xyd[1]),Integer.parseInt(xyd[2]));
+                Node node = new Node(Integer.parseInt(xyd[0]),
+                                    Integer.parseInt(xyd[1]),
+                                    Integer.parseInt(xyd[2]));
+                nodes.add(node); //放入nodes Vector
             }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
-        return null;
+        return nodes;
     }
 
     //当游戏退出时，我们将allEnemyTankNum 保存到 recordFile
