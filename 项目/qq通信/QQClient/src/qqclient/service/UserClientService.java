@@ -7,6 +7,7 @@ import qqcommon.Message;
 import qqcommon.MessageType;
 import qqcommon.User;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -27,7 +28,7 @@ public class UserClientService {
         u.setPassword(pwd);
         //连接到服务端，发送u对象
         try {
-            socket = new Socket(InetAddress.getLocalHost(), 9999);
+            socket = new Socket(InetAddress.getLocalHost(), 8889);
             //得到ObjectOutputStream对象
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             oos.writeObject(u); //发送user对象
@@ -36,7 +37,7 @@ public class UserClientService {
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
             Message ms = (Message) ois.readObject();
 
-            if (ms.getMesType().equals(MessageType.MESSAGE_LOGIN_FAIL)) { //登陆成功
+            if (ms.getMesType().equals(MessageType.MESSAGE_LOGIN_SUCCEED)) { //登陆成功
                 b = true;
                 //创建一个和服务器端保持通讯的线程-> 创建一个类 ClientConnectServerThread
                 ClientConnectServerThread ccst = new ClientConnectServerThread(socket);
@@ -54,6 +55,25 @@ public class UserClientService {
         }
 
         return b;
+
+    }
+
+    //想服务器端请求在线用户列表
+    public void onlineFriendList() {
+        //发送一个Message，类型MESSAGE_GET_ONLINE_FRIEND
+        Message message = new Message();
+        message.setMesType(MessageType.MESSAGE_GET_ONLINE_FRIEND);
+        message.setSender(u.getUserId());
+
+        //发送给服务器
+        //应该得到当前线程的Socket对应的ObjectOutputStream对象
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(ManageClientConnectServerThread.getClientConnectServerThread(u.getUserId()).getSocket().getOutputStream());
+            oos.writeObject(message); //发送一个Message对象，向服务端要求在线用户列表
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
 }

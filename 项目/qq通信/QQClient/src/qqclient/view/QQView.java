@@ -43,7 +43,7 @@ public class QQView {
                     String pwd = Utility.readString(50);
                     //验证该用户是否合法
                     if (userClientService.checkUser(userId,pwd)) {
-                        System.out.println("====欢迎(用户 " + userId + "====");
+                        System.out.println("====欢迎(用户 " + userId + ")登陆成功====");
                         //进入到二级菜单
                         while (loop) {
                             System.out.println("\n ====网络通信系统二级菜单(用户 " + userId + ")====");
@@ -56,7 +56,9 @@ public class QQView {
                             key = Utility.readString(1);
                             switch (key) {
                                 case "1":
-                                    System.out.println("显示在线用户列表");
+                                    //写一个方法获取在线用户列表
+                                    //System.out.println("显示在线用户列表");
+                                    userClientService.onlineFriendList();
                                     break;
                                 case "2":
                                     System.out.println("群发消息");
