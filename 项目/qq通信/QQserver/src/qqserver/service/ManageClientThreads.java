@@ -8,6 +8,12 @@ import java.util.Iterator;
 
 public class ManageClientThreads {
     private static HashMap<String,ServerConnectClientThread> hm = new HashMap<>();
+
+    //返回hm
+    public static HashMap<String, ServerConnectClientThread> getHm() {
+        return hm;
+    }
+
     //添加线程对象到hm集合
     public static void addClientThread(String userId,ServerConnectClientThread serverConnectClientThread) {
         hm.put(userId,serverConnectClientThread);
@@ -17,6 +23,10 @@ public class ManageClientThreads {
         return hm.get(userId);
     }
 
+    //从集合中移除某个线程对象
+    public static void remove(String userId) {
+        hm.remove(userId);
+    }
     //返回在线用户列表
     public static String getOnlineUser() {
         //集合遍历，hashmap的key

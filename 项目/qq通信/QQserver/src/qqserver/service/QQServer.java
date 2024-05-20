@@ -12,7 +12,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class QQServer {
@@ -47,6 +46,8 @@ public class QQServer {
         // 端口可以写在配置文件
         try {
             System.out.println("服务端在9998端口监听");
+            //启动推送新闻的线程
+            new Thread(new SendNewsToAllService()).start();
             ss = new ServerSocket(8889);
 
             while(true) { //监听是循环的，当个某个客户端连接后，继续监听

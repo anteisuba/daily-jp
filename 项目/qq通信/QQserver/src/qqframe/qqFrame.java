@@ -8,5 +8,6 @@ import qqserver.service.QQServer;
 public class qqFrame {
     public static void main(String[] args) {
         new QQServer();
+
     }
 }
