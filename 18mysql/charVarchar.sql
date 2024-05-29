@@ -1,0 +1,15 @@
+CREATE TABLE t7 (
+	'name' CHAR(255));
+	
+CREATE TABLE t8 (
+	'name' VARCHAR(257));
+
+CREATE TABLE t9 (
+	birthday DATE ,
+	job_time DATETIME,
+	login_time TIMESTAMP
+	ON UPDATE CURRENT_TIMESTAMP); #
+	
+SELECT * FROM t9;
+INSERT INTO t9(birthday,job_time)
+	VALUES('2022-11-11','2022-11-11 10:10:10');
