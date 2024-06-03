@@ -1,0 +1,28 @@
+#演示数学相关函数
+#绝对值
+SELECT ABS(-10) FROM DUAL;
+#十进制转二进制
+SELECT BIN(10) FROM DUAL;
+#向上取整，得到比num2大的最小整数
+SELECT CEILING(1.1) FROM DUAL;
+#进制转换
+SELECT CONV(8,10,2) FROM DUAL;
+#向下取整，得到比num2小的最大整数
+SELECT FLOOR(1.1) FROM DUAL;
+#保留小数位数
+SELECT FORMAT(78.1234456,2) FROM DUAL;
+#最小值
+SELECT LEAST(0,1,-10,4) AS min_ind FROM DUAL;
+#求余数
+SELECT MOD(10,3) FROM DUAL;
+#返回随机数
+SELECT FORMAT(RAND(),2) FROM DUAL;
+
+
+
+
+
+
+
+
+
